@@ -1,26 +1,40 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import CardList from './components/card-list/card-list.component'
+import SearchBox from './components/search-box/search-box.component'
+export default class App extends React.Component{
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+  constructor(){
+    super()
+    this.state={
+      content:'Olá, meu nome é Marcos',
+      searchField:'',
+      monstersList:[]
+    }
+      // this.handleChange = this.handleChange.bind(this)
+  }
+  componentDidMount(){
+    fetch('https://jsonplaceholder.typicode.com/users')
+    .then(result=>result.json()).then(resJson=>this.setState({monstersList:resJson})).catch(err=>{})
+  }
+  handleChange=(e)=>{
+    this.setState({searchField:e})
+  }
+  render(){
+    const {monstersList,searchField} = this.state
+    const filteredList = monstersList.filter(element=>
+      element.name.toLowerCase().includes(searchField.toLowerCase())
+    )
+    console.log('filtered list: ',filteredList)
+    /*
+            <input type='search' placeholder='Search here...' className='Input-component'
+        onChange={e=>this.setState({searchField:e.target.value})}/>
+    */
+    return (
+      <div className="App">
+        <SearchBox updateField={this.handleChange}/>
+        <CardList list={filteredList}/>
+      </div>
+    );
+  }
+};
